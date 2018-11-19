@@ -18,10 +18,7 @@ const games = require('./config/games.json')
 
 const Command = require('./src/Command.js')
 
-const gumerPSN = require('gumer-psn')
-
 const XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest;
-
 
 // Check if config is valid
 configValidator.check(config, log)
@@ -145,23 +142,6 @@ self.on('ready', () => {
   self.commands = commands
   self.counts = counts
   log.ready(self, config)
-
-  let platformStatus = {
-    xbl: {
-      active: false,
-      online: null,
-      platform: null,
-      game: null,
-      dash: null
-    },
-   psn: {
-    active: false,
-    online: null,
-    platform: null,
-    game: null,
-    dash: null
-    }
-  }
   
   /* *************************************************************************************\
   |   Rotate Playing game
@@ -191,7 +171,7 @@ self.on('ready', () => {
 	var c = "";
 	
 	setInterval(() => {
-		console.log("Checking for song");
+		log.log("Checking for song");
 		var request = new XMLHttpRequest();
 		request.open('GET', 'https://ws.audioscrobbler.com/2.0/?method=user.getRecentTracks&user=kylr_1&api_key='+self.secret.lastfmkey+'&limit=1&format=json', true);
 		
@@ -206,14 +186,14 @@ self.on('ready', () => {
 				
 				if (currenttrack["@attr"]){
 					if (c != a){
-						console.log("Playig "+a)
+						log.log("Playig "+a)
 						self.editStatus(config.defaultStatus.toLowerCase(), {name: a})
 						b = true;
 						c = a;
 					}
 				}else{
 					if (b){
-						console.log("Playing nothing")
+						log.log("Playing nothing")
 						self.editStatus(config.defaultStatus.toLowerCase(), {name: 'nothing'})
 						b = false;
 					}
