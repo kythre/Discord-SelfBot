@@ -9,22 +9,29 @@
   "defaultStatus": "invisible",
   "mentionNotificator": {
     "inConsole": true,
-    "inNotificationChannel": true,
+    "inNotificationChannel": false,
     "logBlockedUsers": false,
     "ignoredServers": ["SERVER ID"]
   },
   "keywordNotificator": {
     "inConsole": true,
     "inNotificationChannel": true,
+    "notificationChannelID": "514123998318297108",
     "logBlockedUsers": false,
     "caseInsensitive": true,
+    "ignoredServers": ["SERVER ID"]
+  },
+  "deletedMessageLogger": {
+    "inConsole": true,
+    "inNotificationChannel": true,
+    "notificationChannelID": "514308551624097819",
+    "logBlockedUsers": false,
     "ignoredServers": ["SERVER ID"]
   },
   "eventNotificator": {
     "inConsole": true,
     "inNotificationChannel": false
   },
-  "notificationChannelID": "514123998318297108",
   "defaultEmbedColor": "#117ea6",
   "deleteCommandMessages": true,
   "deleteCommandMessagesTime": 15000

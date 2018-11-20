@@ -163,15 +163,13 @@ self.on('ready', () => {
       log.log('Changing avatar')
       self.editSelf({avatar: avatars[Math.floor(Math.random() * avatars.length)]}).catch(err => log.err(err, 'Avatar Rotator'))
     }, config.rotateAvatarImageTime) // Edits avatar every X milliseconds (You can edit this number in the config file)
-  }
-  
-    //self.editStatus(config.defaultStatus.toLowerCase(), {name: 'nothing', type: 1, url: 'https://www.twitch.tv/twitch'})
-	
-	var b = true;
+  }  
+  /* *************************************************************************************\
+  |   LastFM Status
+  \* *************************************************************************************/
+  var b = true;
 	var c = "";
-	
 	setInterval(() => {
-		log.log("Checking for song");
 		var request = new XMLHttpRequest();
 		request.open('GET', 'https://ws.audioscrobbler.com/2.0/?method=user.getRecentTracks&user=kylr_1&api_key='+self.secret.lastfmkey+'&limit=1&format=json', true);
 		
@@ -182,18 +180,22 @@ self.on('ready', () => {
 				var currenttrack = data.recenttracks.track[0];
 				var artist = currenttrack.artist["#text"]
 				var trackname = currenttrack.name
-				var a = trackname + " by "+ artist
-				
+				var a = "\""+trackname + "\" by "+ artist
+        log.log("Song: "+ a,  "LastFM", "bgCyan", true);
+
+
 				if (currenttrack["@attr"]){
-					if (c != a){
-						log.log("Playig "+a)
+          log.log("Currently Playing",  "LastFM", "bgCyan", true);
+
+          if (c != a){
+            log.log("Setting to: "+ a,  "LastFM", "bgCyan", true);
 						self.editStatus(config.defaultStatus.toLowerCase(), {name: a})
 						b = true;
 						c = a;
 					}
 				}else{
 					if (b){
-						log.log("Playing nothing")
+						log.log("Setting to: nothing",  "LastFM", "bgCyan", true)
 						self.editStatus(config.defaultStatus.toLowerCase(), {name: 'nothing'})
 						b = false;
 					}
@@ -205,13 +207,17 @@ self.on('ready', () => {
 			
 		}
 		request.send();
-	}, 10000);
-	
+  }, 15000);
+
+	//self.editStatus(config.defaultStatus.toLowerCase(), {name: 'nothing', type: 1, url: 'https://www.twitch.tv/twitch'})
 })
 
 require('./src/plugins/MentionStalker.js')(self, log, config)
 
 require('./src/plugins/KeywordLogger.js')(self, log, config)
+
+require('./src/plugins/DeletedMessageLogger.js')(self, log, config)
+
 
 self.connect().catch(err => log.err(err, 'Login'))
 

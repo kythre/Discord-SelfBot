@@ -65,7 +65,7 @@ module.exports.check = function (config, log) {
     Err('eventNotificator -> "inConsole"', 'bol')
   } else if (typeof config.eventNotificator.inNotificationChannel !== 'boolean') {
     Err('eventNotificator -> "inNotificationChannel"', 'bol')
-  } else if ((config.mentionNotificator.inNotificationChannel || config.eventNotificator.inNotificationChannel || config.keywordNotificator.inNotificationChannel) && !(/^\d{17,18}/.test(config.notificationChannelID))) {
+  } else if ((config.mentionNotificator.inNotificationChannel || config.eventNotificator.inNotificationChannel || config.keywordNotificator.inNotificationChannel) && !(/^\d{17,18}/.test(config.keywordNotificator.notificationChannelID))) {
     Err('notificationChannelID', 'Must be a channel ID from a server you are in.')
   } else if (!/#?([\da-fA-F]{2})([\da-fA-F]{2})([\da-fA-F]{2})/i.test(config.defaultEmbedColor)) {
     Err('defaultEmbedColor', 'Must be a valid hex color code.')

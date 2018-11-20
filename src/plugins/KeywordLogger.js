@@ -21,33 +21,38 @@ module.exports = (self, log, config) => {
           }
           if (config.keywordNotificator.inConsole) { log.keyword(msg, keywords[i]) }
           if (config.keywordNotificator.inNotificationChannel) {
-            if (Object.keys(self.channelGuildMap).includes(config.notificationChannelID)) {
+            if (Object.keys(self.channelGuildMap).includes(config.keywordNotificator.notificationChannelID)) {
               self.getMessages(msg.channel.id, 4, msg.id).then(msgs => {
+
                 const webhookContent = {
                   username: msg.author.username,
                   avatarURL: msg.author.avatarURL,
-                  content: `**I mentioned keyword \`${keywords[i]}\` in** ${msg.channel.mention}!`,
+                  content: msg.content,
                   embeds: [{
-                    title: moment(msg.timestamp).format('ddd, Do of MMM @ HH:mm:ss'),
                     author: {
-                      name: `${msg.author.username}#${msg.author.discriminator} (${msg.author.id})`,
+                      name: `${msg.author.username}#${msg.author.discriminator}`,
                       icon_url: msg.author.avatarURL
                     },
-                    color: 16426522,
+                    color: 33279,
                     fields: [
-                      { name: msgs[2].author.username, value: msgs[2].cleanContent, inline: false },
-                      { name: msgs[1].author.username, value: msgs[1].cleanContent, inline: false },
-                      { name: msgs[0].author.username, value: msgs[0].cleanContent, inline: false },
-                      { name: msg.author.username, value: msg.cleanContent, inline: false },
-                      { name: 'Guild', value: `${msg.channel.guild.name}\n(${msg.channel.guild.id})`, inline: true },
-                      { name: 'Channel', value: `#${msg.channel.name}\n(${msg.channel.id})`, inline: true },
-                      { name: 'Msg', value: `(${msg.id})`, inline: true }
-                    ]
+                      {
+                        name: `${msg.channel.guild ? msg.channel.guild.name : "Direct Message"}`,
+                        value:`${msg.channel.mention ? msg.channel.mention : "<@"+msg.author.id+">"}`,
+                        inline: true
+                      },
+                      {
+                        name: `User ID`,
+                        value:`${msg.author.id}`,
+                        inline: true
+                      }
+                    ],
+                    timestamp: new Date(msg.timestamp).toISOString()
                   }]
                 }
-                self.getChannelWebhooks(config.notificationChannelID).then(webhooks => {
+
+                self.getChannelWebhooks(config.keywordNotificator.notificationChannelID).then(webhooks => {
                   if (!webhooks || !webhooks.length) {
-                    self.createChannelWebhook(config.notificationChannelID, { name: 'Selfbot' }).then(w => {
+                    self.createChannelWebhook(config.keywordNotificator.notificationChannelID, { name: 'Selfbot' }).then(w => {
                       self.counts.msgsSent = self.counts.msgsSent + 1
                       self.executeWebhook(w.id, w.token, webhookContent)
                     })
