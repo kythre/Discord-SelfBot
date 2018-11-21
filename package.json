@@ -24,8 +24,10 @@
     "node": ">=6.0.0"
   },
   "dependencies": {
+    "lodash": ">=4.17.5",
     "chalk": "^2.0.1",
     "eris": "^0.7.0",
+    "ffmpeg": "0.0.4",
     "gumer-psn": "^0.2.0",
     "moment": "^2.18.1",
     "node-xbox": "^0.1.0",
