@@ -23,30 +23,37 @@ module.exports = (self, log, config) => {
           if (config.keywordNotificator.inNotificationChannel) {
             if (Object.keys(self.channelGuildMap).includes(config.keywordNotificator.notificationChannelID)) {
               self.getMessages(msg.channel.id, 4, msg.id).then(msgs => {
-
                 const webhookContent = {
                   username: msg.author.username,
                   avatarURL: msg.author.avatarURL,
                   content: msg.content,
                   embeds: [{
+                   /*author: {
+                      name: `${msg.author.username}#${msg.author.discriminator}`
+                      ,icon_url: msg.author.avatarURL
+                    }*/
                     author: {
-                      name: `${msg.author.username}#${msg.author.discriminator}`,
-                      icon_url: msg.author.avatarURL
+                      name: msg.channel.guild.name
+                      //,icon_url: `https://cdn.discordapp.com/icons/${msg.channel.guild.id}/${msg.channel.guild.icon}.webp`
                     },
+                    description: `${msg.channel.mention}`,
                     color: 33279,
+                    thumbnail: {
+                      url: `https://cdn.discordapp.com/icons/${msg.channel.guild.id}/${msg.channel.guild.icon}.webp`
+                    },
                     fields: [
-                      {
-                        name: `${msg.channel.guild ? msg.channel.guild.name : "Direct Message"}`,
-                        value:`${msg.channel.mention ? msg.channel.mention : "<@"+msg.author.id+">"}`,
-                        inline: true
-                      },
-                      {
-                        name: `User ID`,
-                        value:`${msg.author.id}`,
-                        inline: true
+                      /*{
+                        name: `${msg.channel.guild.name}`
+                        ,value:`${msg.channel.mention + "     <@"+msg.author.id+">"}`
+                        ,inline: true
                       }
-                    ],
-                    timestamp: new Date(msg.timestamp).toISOString()
+                      ,{
+                        name: `User ID`
+                        ,value:`${msg.author.id}`
+                        ,inline: true
+                      }*/
+                    ]
+                    //,timestamp: new Date(msg.timestamp).toISOString()
                   }]
                 }
 

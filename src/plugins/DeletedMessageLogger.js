@@ -9,14 +9,17 @@ module.exports = (self, log, config) => {
             if (Object.keys(self.channelGuildMap).includes(config.deletedMessageLogger.notificationChannelID)) {
                 self.getMessages(msg.channel.id, 4, msg.id).then(msgs => {
                     var webhookContent = {
+                        username: msg.author.username,
+                        avatarURL: msg.author.avatarURL,
+                        content: msg.content,
                         embeds: [{
                           color: 33279,
-                            author: {
+                            /*author: {
                                 name: `${msg.author.username}#${msg.author.discriminator}`,
                                 icon_url: msg.author.avatarURL
-                            },
+                            },*/
                             thumbnail: {
-                              url: msg.channel.guild ? `https://cdn.discordapp.com/icons/${msg.channel.guild.id}/486f6b0a32b4a3257c504147b30c2539.webp` : msg.author.avatarURL
+                              url: msg.channel.guild ? `https://cdn.discordapp.com/icons/${msg.channel.guild.id}/${msg.channel.guild.icon}.webp` : msg.author.avatarURL
                             },
                             title:"Deleted Message",
                             description:"",
@@ -36,9 +39,9 @@ module.exports = (self, log, config) => {
                         }]
                     }
 
-                    if (msg.cleanContent.length > 0){
+                   /* if (msg.cleanContent.length > 0){
                         webhookContent.embeds[0].description = "```"+msg.cleanContent+"```";
-                    }
+                    } */
 
                     var attachments = "";
                     if(msg.attachments.length > 0){

@@ -1,10 +1,10 @@
 /*
-  Prune. Deletes messages sent by you from a channel. Need to specify a number of messages to delete.
+  Prune. Deletes messages sent by you from a channel. Defaults to 10
 */
 module.exports = (self) => {
   self.registerCommand('prune', function (msg, args) {
     // If no number is given
-    if (!args[0] || !/\d{1,2}/ig.test(args[0])) return this.send(msg, 'Please specify the number of messages to delete.')
+    if (!args[0] || !/\d{1,2}/ig.test(args[0])) args[0] = 10
 
     // Prune msgs
     msg.channel.getMessages(200).then(msgs => {

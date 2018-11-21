@@ -4,3 +4,5 @@ node_modules
 # Startup
 run.bat
 config/secret.json
+gifsicle.exe
+temp/*
