@@ -53,7 +53,7 @@ module.exports = (self, log, config) => {
                         ,inline: true
                       }*/
                     ]
-                    //,timestamp: new Date(msg.timestamp).toISOString()
+                    ,timestamp: new Date(msg.timestamp).toISOString()
                   }]
                 }
 

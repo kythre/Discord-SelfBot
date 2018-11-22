@@ -168,7 +168,8 @@ self.on('ready', () => {
   |   LastFM Status
   \* *************************************************************************************/
   var b = true;
-	var c = "";
+  var c = "";
+
 	setInterval(() => {
     https.get('https://ws.audioscrobbler.com/2.0/?method=user.getRecentTracks&user=kylr_1&api_key='+self.secret.lastfmkey+'&limit=1&format=json', (res) => {
         res.setEncoding('utf8');
@@ -183,7 +184,7 @@ self.on('ready', () => {
               var currenttrack = data.recenttracks.track[0];
               var artist = currenttrack.artist["#text"]
               var trackname = currenttrack.name
-              var a = "\""+trackname + "\" by "+ artist
+              var a = trackname + " by "+ artist
               log.log("Song: "+ a,  "LastFM", "bgCyan", true);
 
               if (currenttrack["@attr"]){

@@ -24,6 +24,23 @@ module.exports = (self) => {
                 var trackname = currenttrack.name
                 var albumarturl = currenttrack.image[3]["#text"];
     
+                /*https.get(albumarturl, (res) => {
+                    res.setEncoding('utf8');
+                    let rawData = '';
+                    res.on('data', (d)=>{
+                        rawData += d;
+                    });
+
+                    res.on('end', ()=>{
+                        try {
+                            console.log(rawData)
+                        } catch (e) {
+                            console.error(e.message);
+                        }
+                    });
+                });*/
+
+
                 this.embed(msg, {
                     thumbnail: {
                         url: albumarturl
@@ -48,7 +65,7 @@ module.exports = (self) => {
                     description: artist,
                     footer:{
                         text: `${user}'s Last.FM`,
-                        icon_url: "https://www.last.fm/static/images/favicon.702b239b6194.ico",
+                       /* icon_url: "https://www.last.fm/static/images/favicon.702b239b6194.ico",*/
                     },
                     timestamp: new Date(msg.timestamp).toISOString()
                 })
