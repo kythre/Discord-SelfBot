@@ -18,7 +18,7 @@ const games = require('./config/games.json')
 
 const Command = require('./src/Command.js')
 
-const XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest;
+const https = require('https');
 
 // Check if config is valid
 configValidator.check(config, log)
@@ -170,43 +170,44 @@ self.on('ready', () => {
   var b = true;
 	var c = "";
 	setInterval(() => {
-		var request = new XMLHttpRequest();
-		request.open('GET', 'https://ws.audioscrobbler.com/2.0/?method=user.getRecentTracks&user=kylr_1&api_key='+self.secret.lastfmkey+'&limit=1&format=json', true);
-		
-		request.onload = () =>{
-			var data = JSON.parse(request.responseText);
-			
-			if (request.status >= 200 && request.status < 400) {
-				var currenttrack = data.recenttracks.track[0];
-				var artist = currenttrack.artist["#text"]
-				var trackname = currenttrack.name
-				var a = "\""+trackname + "\" by "+ artist
-        log.log("Song: "+ a,  "LastFM", "bgCyan", true);
+    https.get('https://ws.audioscrobbler.com/2.0/?method=user.getRecentTracks&user=kylr_1&api_key='+self.secret.lastfmkey+'&limit=1&format=json', (res) => {
+        res.setEncoding('utf8');
+        let rawData = '';
+        res.on('data', (d)=>{
+            rawData += d;
+        });
 
+        res.on('end', ()=>{
+            try {
+              const data = JSON.parse(rawData);
+              var currenttrack = data.recenttracks.track[0];
+              var artist = currenttrack.artist["#text"]
+              var trackname = currenttrack.name
+              var a = "\""+trackname + "\" by "+ artist
+              log.log("Song: "+ a,  "LastFM", "bgCyan", true);
 
-				if (currenttrack["@attr"]){
-          log.log("Currently Playing",  "LastFM", "bgCyan", true);
+              if (currenttrack["@attr"]){
+                log.log("Currently Playing",  "LastFM", "bgCyan", true);
 
-          if (c != a){
-            log.log("Setting to: "+ a,  "LastFM", "bgCyan", true);
-						self.editStatus(config.defaultStatus.toLowerCase(), {name: a})
-						b = true;
-						c = a;
-					}
-				}else{
-					if (b){
-						log.log("Setting to: nothing",  "LastFM", "bgCyan", true)
-						self.editStatus(config.defaultStatus.toLowerCase(), {name: 'nothing'})
-						b = false;
-					}
-				}
-				self.editAFK(self.afk);
-			} else {
-				console.log('error');
-			}
-			
-		}
-		request.send();
+                if (c != a){
+                  log.log("Setting to: "+ a,  "LastFM", "bgCyan", true);
+                  self.editStatus(config.defaultStatus.toLowerCase(), {name: a})
+                  b = true;
+                  c = a;
+                }
+              }else{
+                if (b){
+                  log.log("Setting to: nothing",  "LastFM", "bgCyan", true)
+                  self.editStatus(config.defaultStatus.toLowerCase(), {name: 'nothing'})
+                  b = false;
+                }
+              }
+              self.editAFK(self.afk);
+            } catch (e) {
+              console.error(e.message);
+          }
+      });
+    })  
   }, 15000);
 
 	//self.editStatus(config.defaultStatus.toLowerCase(), {name: 'nothing', type: 1, url: 'https://www.twitch.tv/twitch'})

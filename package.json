@@ -24,11 +24,13 @@
     "node": ">=6.0.0"
   },
   "dependencies": {
-    "lodash": ">=4.17.5",
+    "canvas": "^2.1.0",
     "chalk": "^2.0.1",
+    "color-thief": "^2.2.3",
     "eris": "^0.7.0",
     "ffmpeg": "0.0.4",
     "gumer-psn": "^0.2.0",
+    "lodash": ">=4.17.5",
     "moment": "^2.18.1",
     "node-xbox": "^0.1.0",
     "superagent": "^3.5.2",

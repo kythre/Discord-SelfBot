@@ -1,5 +1,5 @@
-var fs = require('fs'),
-request = require('request');
+const fs = require('fs')
+const request = require('request');
 const { exec } = require('child_process');
 var download = function(uri, filename, callback){
     request.head(uri, function(err, res, body){
