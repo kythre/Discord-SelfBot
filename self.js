@@ -24,7 +24,7 @@ const https = require('https');
 configValidator.check(config, log)
 
 // Setup discord client
-const self = new Eris(secret.token)
+const self = new Eris(secret.token, {restMode:true})
 let isReady = false
 
 // Pass config and constants to self
