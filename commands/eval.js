@@ -9,17 +9,21 @@ module.exports = (self) => {
     if (msg.author.id !== this.self.user.id) return
 
     // Delete the msg, create a new one, and then eval
-    this.edit(msg, 'Evaluating...').then(m => {
-      let evaled = ''
-      var output
-      var message
+    this.edit(msg, 'evaluating...').then(m => {
+      let evaled
+      let message
       try {
         evaled = eval(args.join(' ')) // eslint-disable-line no-eval
-        if (Array.isArray(evaled) || typeof evaled === 'object') { evaled = util.inspect(evaled) }
-        if (typeof (evaled) === 'string') {evaled.replace(/`/g, '`' + String.fromCharCode(8203)) }
       } catch (err) {
         evaled = err
       }
+
+      if(evaled.hasOwnProperty('shard')){
+        evaled.shard = null;
+      }
+
+      evaled = util.inspect(evaled)
+      evaled.replace(/`/g, '`' + String.fromCharCode(8203))
 
       for(var a in self.secret){
         evaled = evaled.replace(self.secret[a], "")
@@ -33,22 +37,12 @@ module.exports = (self) => {
         '```js\n',
         evaled,
         '\n```'
-      ].join(' ')
+      ]
 
-      if (message.length > 2000)
-        evaled = evaled.substring(0, evaled.length-(message.length-1997))+"..."
+      if (message.join(' ').length > 2000)
+        message[5] = evaled.substring(0, evaled.length-(message.join(' ').length-1997))+"..."
 
-      message = [
-        'k Input:',
-        '```js\n',
-        args.join(' '),
-        '```\nOutput:',
-        '```js\n',
-        evaled,
-        '\n```'
-      ].join(' ')
-
-      this.self.editMessage(msg.channel.id, msg.id, message)
+      this.self.editMessage(msg.channel.id, msg.id, message.join(' '))
     })
   })
 }
