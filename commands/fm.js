@@ -18,11 +18,11 @@ module.exports = (self) => {
         res.on('end', ()=>{
             try {
                 const data = JSON.parse(rawData);
-                var currenttrack = data.recenttracks.track[0];
-                var user = data.recenttracks["@attr"].user
-                var artist = currenttrack.artist["#text"]
-                var trackname = currenttrack.name
-                var albumarturl = currenttrack.image[3]["#text"];
+                let currenttrack = data.recenttracks.track[0];
+                let user = data.recenttracks["@attr"].user
+                let artist = currenttrack.artist["#text"]
+                let trackname = currenttrack.name
+                let albumarturl = currenttrack.image[3]["#text"];
     
                 /*https.get(albumarturl, (res) => {
                     res.setEncoding('utf8');
