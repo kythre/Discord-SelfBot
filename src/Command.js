@@ -17,7 +17,7 @@ class Command {
     this.name = name || ''
     this.aliases = options.aliases || []
     this.perms = options.perms || []
-    this.deleteAfter = options.deleteAfter || this.config.deleteCommandMessages
+    this.deleteAfter = false // options.deleteAfter || this.config.deleteCommandMessages
     this.noPms = !!options.noPms
 
     if (typeof generator === 'function') {
@@ -32,19 +32,19 @@ class Command {
     if (msg.author.id !== this.self.user.id) return
     // Check if msg is private
     if (!msg.channel.guild && this.noPMs === true) {
-      this.send(msg, 'This command is disabled in PMs!', 5000)
+      this.edit(msg, 'This command is disabled in PMs!', 5000)
       return
     }
     // Check if author has the required permissions
     if (this.perms.length > 0) {
       if (!msg.channel.guild) {
-        this.send(msg, 'This is a server only command!', 5000)
+        this.edit(msg, 'This is a server only command!', 5000)
         return
       }
       const authorPerms = msg.channel.permissionsOf(msg.author.id).json
       for (let perm in this.perms) {
         if (!authorPerms[this.perms[perm]]) {
-          this.send(msg, `Missing permissions. (${this.perms[perm]})`, 5000)
+          this.edit(msg, `Missing permissions. (${this.perms[perm]})`, 5000)
           return
         }
       }
@@ -54,13 +54,13 @@ class Command {
       this.run(msg, args)
     } catch (err) {
       this.log.err(err, `${this.name.toUpperCase()} on run`)
-      this.send(msg, 'Something bad happened.', 5000)
+      this.edit(msg, 'Something bad happened.', 5000)
       return
     }
   }
 
   send (msg, content, deleteDelay = 0) {
-    deleteDelay = deleteDelay || this.config.deleteCommandMessagesTime
+    deleteDelay = false // deleteDelay || this.config.deleteCommandMessagesTime
     content = this.self.config.prefix+content
     if (content.length > 2000) {
       this.log.err('Error sending a message larger than the limit (2000+)')
@@ -84,10 +84,10 @@ class Command {
   }
 
   embed (msg, embed = {}, deleteDelay = 0) {
-    deleteDelay = deleteDelay || this.config.deleteCommandMessagesTime
+    deleteDelay = false // deleteDelay || this.config.deleteCommandMessagesTime
     if (!embed.color) embed.color = this.defaultColor
     return new Promise((resolve, reject) => {
-      this.self.createMessage(msg.channel.id, { content: '', embed: embed })
+      this.self.editMessage(msg.channel.id, msg.id, { content: '', embed: embed })
       .then(msg => {
         this.self.counts.msgsSent = this.self.counts.msgsSent + 1
         if (deleteDelay) {
@@ -104,7 +104,7 @@ class Command {
   }
 
   edit (msg, content, deleteDelay = 0) {
-    deleteDelay = deleteDelay || this.config.deleteCommandMessagesTime
+    deleteDelay = false // deleteDelay || this.config.deleteCommandMessagesTime
     content = this.self.config.prefix+content
     if (content.length > 20000) {
       this.log.err('Error sending a message larger than the limit (2000+)')

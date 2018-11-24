@@ -7,7 +7,7 @@ module.exports = (self) => {
             return
 
         var message = "";
-        console.log(danceEmoji)
+       // console.log(danceEmoji)
 
         switch(args[0]){
             case "clap":
@@ -16,7 +16,6 @@ module.exports = (self) => {
                     if(a>0 && args[a].length>0)
                         message += args[a]+" 👏 "; 
                 }    
-                this.self.createMessage(msg.channel.id, message)
                 break;
 
             case "space":
@@ -43,8 +42,7 @@ module.exports = (self) => {
                 return
                 break;
         }
-
-        this.self.createMessage(msg.channel.id, message)
+        this.self.editMessage(msg.channel.id, msg.id, message)
     })
   }
   

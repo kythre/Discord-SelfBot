@@ -24,7 +24,7 @@ const https = require('https');
 configValidator.check(config, log)
 
 // Setup discord client
-const self = new Eris(secret.token, {restMode:true})
+const self = new Eris(secret.token)
 let isReady = false
 
 // Pass config and constants to self
@@ -86,7 +86,7 @@ self.on('messageCreate', (msg) => {
     const command = commands.main[trigger]
     if (command !== undefined) {
       log.cmd(msg, self)
-      setTimeout(() => self.deleteMessage(msg.channel.id, msg.id), 750)
+      //setTimeout(() => self.deleteMessage(msg.channel.id, msg.id), 750)
       command.process(msg, args)
     }
   }

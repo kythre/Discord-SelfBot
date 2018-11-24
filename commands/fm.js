@@ -74,7 +74,5 @@ module.exports = (self) => {
             }
         });
     })  
-  },
-  {deleteAfter: false}
-  )
+  })
 }

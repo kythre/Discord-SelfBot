@@ -4,7 +4,7 @@
 module.exports = (self) => {
   self.registerCommand('help', function (msg, args) {
     this.log.log(`Bot commands:\n${Object.keys(self.commands.main).join('\n')}`, 'Help')
-    return this.send(msg, 'Check console.')
+    return this.edit(msg, 'Check console.')
   }, {
     aliases: ['h']
   })
