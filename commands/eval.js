@@ -8,7 +8,6 @@ module.exports = (self) => {
     // If msg author is not the owner
     if (msg.author.id !== this.self.user.id) return
 
-    // Delete the msg, create a new one, and then eval
     this.edit(msg, 'evaluating...').then(m => {
       let evaled
       let message
@@ -18,7 +17,7 @@ module.exports = (self) => {
         evaled = err
       }
 
-      if(evaled.hasOwnProperty('shard')){
+      if(evaled && evaled.hasOwnProperty('shard')){
         evaled.shard = null;
       }
 
