@@ -61,11 +61,17 @@ class Command {
 
   send (msg, content, deleteDelay = 0) {
     deleteDelay = false // deleteDelay || this.config.deleteCommandMessagesTime
-    content = this.self.config.prefix+content
-    if (content.length > 2000) {
-      this.log.err('Error sending a message larger than the limit (2000+)')
-      return
+
+    if (typeof content == "string") {
+      content = this.self.config.prefix+content
+      if (content.length > 2000) {
+        this.log.err('Error sending a message larger than the limit (2000+)')
+        return
+      }
+    }else{
+      content.content = this.self.config.prefix+content.content
     }
+
     return new Promise((resolve, reject) => {
       this.self.createMessage(msg.channel.id, content)
       .then(msg => {
@@ -105,11 +111,17 @@ class Command {
 
   edit (msg, content, deleteDelay = 0) {
     deleteDelay = false // deleteDelay || this.config.deleteCommandMessagesTime
-    content = this.self.config.prefix+content
-    if (content.length > 20000) {
-      this.log.err('Error sending a message larger than the limit (2000+)')
-      return
+
+    if (typeof content == "string") {
+      content = this.self.config.prefix+content
+      if (content.length > 20000) {
+        this.log.err('Error sending a message larger than the limit (2000+)')
+        return
+      }
+    }else{
+      content.content = this.self.config.prefix+content.content
     }
+
     return new Promise((resolve, reject) => {
       this.self.editMessage(msg.channel.id, msg.id, content)
       .then(m => {
