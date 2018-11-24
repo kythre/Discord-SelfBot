@@ -29,12 +29,25 @@ module.exports = (self) => {
                 break;
 
             case "dance":
+                let emojis = self.guilds.get("504681647392948234").emojis
+                for(var a in emojis){
+                    emojis[emojis[a].name.substr(0,1)] = emojis[a]
+                }
+
                 for(var a in args){
-                    if(a>0 && args[a].length>0)
-                        for(var b in args[a]){
-                       //     message += `<a:${args[a][b]}_:504682628629397504>`
+                    let word = args[a]
+                    word = word.toLowerCase()
+
+                    if(a>0 && word.length>0)
+                        for(var b in word){
+                            let char = word[b]
+                            if(char.match(/[a-z]/)){
+                                message += `<a:${emojis[char].name}:${emojis[char].id}>`
+                            }else{
+                                message+=char
+                            }
                         }
-                        message+=" "
+                        message+="  "
                 }
                 break;
 
