@@ -51,6 +51,24 @@ module.exports = (self) => {
                 }
                 break;
 
+            case "ri":
+            for(var a in args){
+                let word = args[a]
+                word = word.toLowerCase()
+
+                if(a>0 && word.length>0)
+                    for(var b in word){
+                        let char = word[b]
+                        if(char.match(/[a-z]/)){
+                            message += `:regional_indicator_${char}:`
+                        }else{
+                            message+=char
+                        }
+                    }
+                    message+="  "
+            }
+            break;
+
             default:
                 return
                 break;
