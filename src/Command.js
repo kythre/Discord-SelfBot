@@ -59,7 +59,7 @@ class Command {
     }
   }
 
-  send (msg, content, deleteDelay = 0, file = nlll) {
+  send (msg, content, deleteDelay = 0, file = null) {
     deleteDelay = false // deleteDelay || this.config.deleteCommandMessagesTime
 
     if (typeof content == "string") {
