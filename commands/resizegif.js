@@ -1,6 +1,6 @@
 const fs = require('fs')
 const request = require('request');
-const { exec } = require('child_process');
+const { execSync } = require('child_process');
 var download = function(uri, filename, callback){
     request.head(uri, function(err, res, body){
         //console.log('content-type:', res.headers['content-type']);
@@ -14,8 +14,9 @@ var download = function(uri, filename, callback){
 */
 module.exports = (self) => {
     self.registerCommand('resizegif', function (msg, args) {
-        msg.channel.getMessages(2).then(msgs => {
-            var gif = ""
+        self.getMessages(msg.channel.id, 1, msg.id, null,null).then(msgs => {
+            var prevmsg = msgs[0]
+            var gif = {}
              switch(true){
                 case msg.attachments[0] != undefined:
                     gif = msg.attachments[0]
@@ -24,31 +25,63 @@ module.exports = (self) => {
                     gif = msg.embeds[0]
                     gif.filename = gif.url.split('/')[gif.url.split('/').length-1]
                     break;
-                case msgs[1].attachments[0] != undefined:
-                    gif = msgs[1].attachments[0]
+                case prevmsg.attachments[0] != undefined:
+                    gif = prevmsg.attachments[0]
                     break;
-                case (msgs[1].embeds[0] != undefined) && msgs[1].embeds[0].type == "image":
-                    gif = msgs[1].embeds[0]
+                case (prevmsg.embeds[0] != undefined) && prevmsg.embeds[0].type == "image":
+                    gif = prevmsg.embeds[0]
                     gif.filename = gif.url.split('/')[gif.url.split('/').length-1]
                     break;
                 default:
-                    return self.createMessage(msg.channel.id, self.config.prefix + ':thumbsdown: Bad gif')
+                    return this.edit(msg, {embed:{description:`:thumbsdown: nothing to resize`}})
             }
 
             if (!gif.url.endsWith('.gif'))
-                return self.createMessage(msg.channel.id, self.config.prefix + ':thumbsdown: Bad url')
+                return this.edit(msg, {embed:{description:`:thumbsdown: invalid gif`}})
 
-            download(gif.url, "./temp/"+gif.filename, function(){
-                exec(`gifsicle.exe --resize-height 129 ./temp/${gif.filename} --colors 256 -o ./temp/${gif.filename}`, (err, stdout, stderr) => {
-                    if (err) {
-                        console.log(err)
-                        return;
+            this.edit(msg, {embed:{description:`:point_up: downloading gif`}})
+
+            gif.filepath = "./temp/"+gif.filename
+
+            gif.size = {
+                original: 0,
+                current: 0
+            }
+
+            download(gif.url, gif.filepath, ()=>{
+                gif.size.original = fs.statSync(`${gif.filepath}`).size/1000
+
+                if(gif.size.original < 256)
+                    return this.edit(msg, {embed:{description:`:thumbsup: gif already small`}})
+
+                try{
+                    let size = 128
+                    this.edit(msg, {embed:{description:`:point_up: resizing gif`}})
+                    do{
+                        execSync(`gifsicle.exe --resize-height ${size} ${gif.filepath} --colors 256 -o ${gif.filepath}`)
+                        gif.size.current = fs.statSync(gif.filepath).size/1000
+                        size -= 10
+                    }while(gif.size.current > 256)
+                }catch(err){
+                    return this.edit(msg, {embed:{description:`:point_up: error resizing: ${err}`}})
+                }
+
+                this.edit(msg, {embed:{description:`:point_up: sending gif`}})
+    
+                gif.size.current = fs.statSync(gif.filepath).size/1000
+                gif.file = fs.readFileSync(gif.filepath)
+
+                this.send(msg, {
+                    content: `:thumbsup: now ${gif.size.current}KB`,
+                    embed:{
+                        description: `Original: [${gif.filename}](${gif.url}) (${gif.size.original}KB)`
                     }
-                    self.createMessage(msg.channel.id, self.config.prefix + ':ok_hand:', {
-                        file: fs.readFileSync(`./temp/${gif.filename}`),
-                        name: gif.filename
-                    })
-                });
+                }, null, {
+                    file: gif.file,
+                    name: gif.filename
+                }).then(()=>{
+                    msg.delete()
+                })
             });
         })
     })
