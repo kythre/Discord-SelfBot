@@ -12,7 +12,7 @@ module.exports = (self) => {
       },
       description: quotemsg.content,
       footer:{
-          text: `${quotemsg.channel.name ? quotemsg.channel.name : quotemsg.author.username} in ${quotemsg.channel.name ? quotemsg.channel.name : 'DMs'}`
+          text: `${quotemsg.channel.name ? quotemsg.channel.name : quotemsg.author.username} in ${quotemsg.channel.name ? quotemsg.channel.guild.name : 'DMs'}`
       },
       image: {
         url: quotemsg.attachments[0] ? quotemsg.attachments[0].url : ""
@@ -22,6 +22,10 @@ module.exports = (self) => {
   }
 
   self.registerCommand('quote', function (msg, args) {
+    if (!args[0]){
+      return this.edit(msg,  "you done it wrong")
+    }
+
     if (args[2]) {
       self.getDMChannel(args[1]).then(c => {
         c.getMessages(1, null, null,args[0].toString()).then(msgs=>{
