@@ -1,6 +1,8 @@
 const fs = require('fs')
+const os = require('os');
 const request = require('request');
 const { execSync } = require('child_process');
+
 var download = function(uri, filename, callback){
     request.head(uri, function(err, res, body){
         //console.log('content-type:', res.headers['content-type']);
@@ -18,26 +20,26 @@ module.exports = (self) => {
             var prevmsg = msgs[0]
             var gif = {}
              switch(true){
-                case msg.attachments[0] != undefined:
+                case msg.attachments[0] !== undefined:
                     gif = msg.attachments[0]
                     break;
-                case (msg.embeds[0] != undefined) && msg.embeds[0].type == "image":
+                case (msg.embeds[0] !== undefined) && msg.embeds[0].type == "image":
                     gif = msg.embeds[0]
                     gif.filename = gif.url.split('/')[gif.url.split('/').length-1]
                     break;
-                case prevmsg.attachments[0] != undefined:
+                case prevmsg.attachments[0] !== undefined:
                     gif = prevmsg.attachments[0]
                     break;
-                case (prevmsg.embeds[0] != undefined) && prevmsg.embeds[0].type == "image":
+                case (prevmsg.embeds[0] !== undefined) && prevmsg.embeds[0].type == "image":
                     gif = prevmsg.embeds[0]
                     gif.filename = gif.url.split('/')[gif.url.split('/').length-1]
                     break;
                 default:
-                    return this.edit(msg, {embed:{description:`:thumbsdown: nothing to resize`}})
+                 return this.error(msg, `noting to resize`, 'error resizing')
             }
 
             if (!gif.url.endsWith('.gif'))
-                return this.edit(msg, {embed:{description:`:thumbsdown: invalid gif`}})
+              return this.error(msg, `invalid gif`, 'error resizing')
 
             this.edit(msg, {embed:{description:`:point_up: downloading gif`}})
 
@@ -58,12 +60,18 @@ module.exports = (self) => {
                     let size = 128
                     this.edit(msg, {embed:{description:`:point_up: resizing gif`}})
                     do{
-                        execSync(`gifsicle.exe --resize-height ${size} ${gif.filepath} --colors 256 -o ${gif.filepath}`)
+                        switch(os.platform()){
+                          case "win32":
+                            execSync(`gifsicle.exe --resize-height ${size} ${gif.filepath} --colors 256 -o ${gif.filepath}`)
+                            break;
+                          default:
+                            return this.error(msg, `${os.platform()} not supported`, 'error resizing')
+                        }
                         gif.size.current = fs.statSync(gif.filepath).size/1000
                         size -= 10
                     }while(gif.size.current > 256)
                 }catch(err){
-                    return this.edit(msg, {embed:{description:`:point_up: error resizing: ${err}`}})
+                    return this.error(msg, err, 'error resizing')
                 }
 
                 this.edit(msg, {embed:{description:`:point_up: sending gif`}})

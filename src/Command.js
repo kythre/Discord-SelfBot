@@ -17,7 +17,7 @@ class Command {
     this.name = name || ''
     this.aliases = options.aliases || []
     this.perms = options.perms || []
-    this.deleteAfter = false // options.deleteAfter || this.config.deleteCommandMessages
+    this.deleteAfter = options.deleteAfter || this.config.deleteCommandMessages
     this.noPms = !!options.noPms
 
     if (typeof generator === 'function') {
@@ -54,13 +54,13 @@ class Command {
       this.run(msg, args)
     } catch (err) {
       this.log.err(err, `${this.name.toUpperCase()} on run`)
-      this.edit(msg, 'Something bad happened.', 5000)
+      this.edit(msg, {embed:{description:`:thumbsdown: error: \`\`\`js\n${err}\`\`\``}})
       return
     }
   }
 
   send (msg, content, deleteDelay = 0, file = null) {
-    deleteDelay = false // deleteDelay || this.config.deleteCommandMessagesTime
+    deleteDelay = deleteDelay || this.config.deleteCommandMessagesTime
 
     if (typeof content == "string") {
       content = this.self.config.prefix+content
@@ -94,7 +94,7 @@ class Command {
   }
 
   embed (msg, embed = {}, deleteDelay = 0) {
-    deleteDelay = false // deleteDelay || this.config.deleteCommandMessagesTime
+    deleteDelay = deleteDelay || this.config.deleteCommandMessagesTime
     if (!embed.color) embed.color = this.defaultColor
     return new Promise((resolve, reject) => {
       this.self.editMessage(msg.channel.id, msg.id, { content: '', embed: embed })
@@ -114,7 +114,7 @@ class Command {
   }
 
   edit (msg, content, deleteDelay = 0) {
-    deleteDelay = false // deleteDelay || this.config.deleteCommandMessagesTime
+    deleteDelay = deleteDelay || this.config.deleteCommandMessagesTime
     if (typeof content == "string") {
       content = this.self.config.prefix+content
       if (content.length > 20000) {
@@ -145,6 +145,21 @@ class Command {
     })
   }
 
+  error (msg = null, err = '', sum = ''){
+    err = err === '' ? 'something happened :(' :  err
+    sum = sum === '' ? 'something happened :(' :  sum
+    
+    if(msg){
+      this.edit(msg, {
+        embed:{
+          description:`:thumbsdown: ${sum}: \`\`\`js\n${err}\`\`\``
+        }
+      })
+    }else{
+
+    }
+  }
+  
   findMember (msg, str) {
     if (!str || str === '') return false
     const guild = msg.channel.guild

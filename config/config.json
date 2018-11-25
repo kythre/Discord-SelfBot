@@ -33,6 +33,6 @@
     "inNotificationChannel": false
   },
   "defaultEmbedColor": "#117ea6",
-  "deleteCommandMessages": true,
+  "deleteCommandMessages": false,
   "deleteCommandMessagesTime": 15000
 }
