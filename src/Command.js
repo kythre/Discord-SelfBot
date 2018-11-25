@@ -59,7 +59,7 @@ class Command {
     }
   }
 
-  send (msg, content, deleteDelay = 0) {
+  send (msg, content, deleteDelay = 0, file = nlll) {
     deleteDelay = false // deleteDelay || this.config.deleteCommandMessagesTime
 
     if (typeof content == "string") {
@@ -69,11 +69,15 @@ class Command {
         return
       }
     }else{
-      content.content = this.self.config.prefix+content.content
+      if(content && content.content){
+        content.content = this.self.config.prefix+content.content
+      }else{
+        content.content = msg.content
+      }
     }
 
     return new Promise((resolve, reject) => {
-      this.self.createMessage(msg.channel.id, content)
+      this.self.createMessage(msg.channel.id, content, file)
       .then(msg => {
         this.self.counts.msgsSent = this.self.counts.msgsSent + 1
         if (deleteDelay) {
@@ -111,7 +115,6 @@ class Command {
 
   edit (msg, content, deleteDelay = 0) {
     deleteDelay = false // deleteDelay || this.config.deleteCommandMessagesTime
-
     if (typeof content == "string") {
       content = this.self.config.prefix+content
       if (content.length > 20000) {
@@ -119,7 +122,11 @@ class Command {
         return
       }
     }else{
-      content.content = this.self.config.prefix+content.content
+      if(content.content){
+        content.content = this.self.config.prefix+content.content
+      }else{
+        content.content = msg.content
+      }
     }
 
     return new Promise((resolve, reject) => {
@@ -159,7 +166,7 @@ class Command {
     if (!color) return this.defaultColor
     const colors = this.constants.colors
 
-    // color=random
+    // color=randomu
     if (color.toLowerCase() === 'random') {
       const keys = Object.keys(colors)
       let random = colors[ keys[ keys.length * Math.random() << 0 ] ]
