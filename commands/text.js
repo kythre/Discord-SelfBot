@@ -3,9 +3,6 @@
 */
 module.exports = (self) => {
     self.registerCommand('text', function (msg, args) {
-        if (args.length == 0)
-            return
-
         var message = "";
        // console.log(danceEmoji)
 
@@ -29,20 +26,26 @@ module.exports = (self) => {
                 break;
 
             case "dance":
-                let emojis = self.guilds.get("504681647392948234").emojis
-                for(var a in emojis){
-                    emojis[emojis[a].name.substr(0,1)] = emojis[a]
+            case "ri":
+                if(args[0] == "dance"){
+                    var emojis = self.guilds.get("504681647392948234").emojis
+                    for(let a in emojis){
+                        emojis[emojis[a].name.substr(0,1)] = emojis[a]
+                    }
                 }
 
-                for(var a in args){
-                    let word = args[a]
-                    word = word.toLowerCase()
+                for(let a in args){
+                    let word = args[a].toLowerCase()
 
                     if(a>0 && word.length>0)
-                        for(var b in word){
+                        for(let b in word){
                             let char = word[b]
                             if(char.match(/[a-z]/)){
-                                message += `<a:${emojis[char].name}:${emojis[char].id}>`
+                                if(args[0] == "dance"){
+                                    message += `<a:${emojis[char].name}:${emojis[char].id}>`
+                                }else{
+                                    message += String.fromCodePoint(0x1F1E5 + (char.charCodeAt(0) - 96)) + String.fromCodePoint(0x200D)
+                                }
                             }else{
                                 message+=char
                             }
@@ -51,29 +54,11 @@ module.exports = (self) => {
                 }
                 break;
 
-            case "ri":
-            for(var a in args){
-                let word = args[a]
-                word = word.toLowerCase()
-
-                if(a>0 && word.length>0)
-                    for(var b in word){
-                        let char = word[b]
-                        if(char.match(/[a-z]/)){
-                            message += `:regional_indicator_${char}:`
-                        }else{
-                            message+=char
-                        }
-                    }
-                    message+="  "
-            }
-            break;
-
             default:
-                return
+                //empty message lol
                 break;
         }
-        this.self.editMessage(msg.channel.id, msg.id, message)
+        this.edit(msg, message, null, false)
     })
   }
   
