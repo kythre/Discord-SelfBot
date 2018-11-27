@@ -3,40 +3,14 @@
 */
 
 module.exports = (self) => {  
-  function quote(that, msg, quotemsg){
-    that.embed(msg, {
-      color: that.defaultColor,
-      author: {
-          name: quotemsg.author.username,
-          icon_url: quotemsg.author.avatarURL
-      },
-      description: quotemsg.content,
-      footer:{
-          text: `${quotemsg.channel.name ? quotemsg.channel.name : quotemsg.author.username} in ${quotemsg.channel.name ? quotemsg.channel.guild.name : 'DMs'}`
-      },
-      image: {
-        url: quotemsg.attachments[0] ? quotemsg.attachments[0].url : ""
-      },
-      timestamp: new Date(quotemsg.timestamp).toISOString()
-    })
-  }
-
   self.registerCommand('quote', function (msg, args) {
-    if (!args[0]){
-      return this.edit(msg,  "you done it wrong")
-    }
+    qmsgID = args[0] 
+    qchanID = args[1]
+    isDM = args[2] 
 
-    if (args[2]) {
-      self.getDMChannel(args[1]).then(c => {
-        c.getMessages(1, null, null,args[0].toString()).then(msgs=>{
-          quote(this, msg, msgs[0])
-        })
-      })
-    }else{
-      self.getMessages(args[1] ? args[1] :msg.channel.id, 1, null, null,args[0].toString()).then(msgs=>{
-        quote(this, msg, msgs[0])
-      })
-    }
+    this.getMessage(msg, qmsgID, qchanID, isDM).then(qmsg=>{
+      this.quote(msg, qmsg)
+    })
   })
 }
 
