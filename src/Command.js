@@ -81,7 +81,7 @@ class Command {
       .then(msg => {
         this.self.counts.msgsSent = this.self.counts.msgsSent + 1
         if (deleteDelay) {
-          if (this.deleteAfter) return resolve(msg)
+          if (!this.deleteAfter) return resolve(msg)
           setTimeout(() => {
             this.self.deleteMessage(msg.channel.id, msg.id)
             .then(() => { resolve(msg) }).catch(reject)
@@ -101,7 +101,7 @@ class Command {
       .then(msg => {
         this.self.counts.msgsSent = this.self.counts.msgsSent + 1
         if (deleteDelay) {
-          if (this.deleteAfter) return resolve(msg)
+          if (!this.deleteAfter) return resolve(msg)
           setTimeout(() => {
             this.self.deleteMessage(msg.channel.id, msg.id)
             .then(() => { resolve(msg) }).catch(reject)
@@ -113,17 +113,19 @@ class Command {
     })
   }
 
-  edit (msg, content, deleteDelay = 0) {
+  edit (msg, content, deleteDelay = 0, a = true) {
     deleteDelay = deleteDelay || this.config.deleteCommandMessagesTime
     if (typeof content == "string") {
-      content = this.self.config.prefix+content
+      if(a)
+        content = this.self.config.prefix+content
       if (content.length > 20000) {
         this.log.err('Error sending a message larger than the limit (2000+)')
         return
       }
     }else{
       if(content.content){
-        content.content = this.self.config.prefix+content.content
+        if(a)
+          content.content = this.self.config.prefix+content.content
       }else{
         content.content = msg.content
       }
@@ -133,7 +135,7 @@ class Command {
       this.self.editMessage(msg.channel.id, msg.id, content)
       .then(m => {
         if (deleteDelay) {
-          if (this.deleteAfter) return resolve(m)
+          if (!this.deleteAfter) return resolve(m)
           setTimeout(() => {
             this.self.deleteMessage(m.channel.id, m.id)
             .then(() => { resolve(m) }).catch(reject)
@@ -145,19 +147,15 @@ class Command {
     })
   }
 
-  error (msg = null, err = '', sum = ''){
+  error (msg, err = '', sum = ''){
     err = err === '' ? 'something happened :(' :  err
     sum = sum === '' ? 'something happened :(' :  sum
-    
-    if(msg){
-      this.edit(msg, {
-        embed:{
-          description:`:thumbsdown: ${sum}: \`\`\`js\n${err}\`\`\``
-        }
-      })
-    }else{
 
-    }
+    this.edit(msg, {
+      embed:{
+        description:`:thumbsdown: ${sum}: \`\`\`js\n${err}\`\`\``
+      }
+    })
   }
   
   findMember (msg, str) {
@@ -204,6 +202,41 @@ class Command {
 
     // Default
     } else return this.defaultColor
+  }
+
+  getMessage (msg, msgID, chanID = null, dm = false){
+    msgID = msgID.toString()
+
+    if(dm){
+      return this.self.getDMChannel(chanID).then(c => {
+        return c.getMessages(1, null, null, msgID).then(msgs=>{
+          return msgs[0]
+        })
+      })
+    }else{
+      return this.self.getMessages(chanID ? chanID : msg.channel.id, 1, null, null, msgID).then(msgs=>{
+        return msgs[0]
+      })
+    }
+  }
+
+  quote(msg, quotemsg){
+    let color = this.getColor('role', quotemsg, quotemsg.author)
+    this.embed(msg, {
+      color: color,
+      author: {
+          name: quotemsg.author.username,
+          icon_url: quotemsg.author.avatarURL
+      },
+      description: quotemsg.content,
+      footer:{
+          text: `${quotemsg.channel.name ? quotemsg.channel.name : quotemsg.author.username} in ${quotemsg.channel.name ? quotemsg.channel.guild.name : 'DMs'}`
+      },
+      image: {
+        url: quotemsg.attachments[0] ? quotemsg.attachments[0].url : ""
+      },
+      timestamp: new Date(quotemsg.timestamp).toISOString()
+    })
   }
 }
 
