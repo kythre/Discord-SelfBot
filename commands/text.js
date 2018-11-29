@@ -3,22 +3,21 @@
 */
 module.exports = (self) => {
     self.registerCommand('text', function (msg, args) {
-        var message = "";
-       // console.log(danceEmoji)
-
+        let message = "";
+        
         switch(args[0]){
             case "clap":
                 message = "👏 ";
-                for(var a in args){
+                for(let a in args){
                     if(a>0 && args[a].length>0)
                         message += args[a]+" 👏 "; 
                 }    
                 break;
 
             case "space":
-                for(var a in args){
+                for(let a in args){
                     if(a>0 && args[a].length>0)
-                        for(var b in args[a]){
+                        for(let b in args[a]){
                             message += args[a][b]+" "
                         }
                         message+=" "

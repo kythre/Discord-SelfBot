@@ -59,17 +59,18 @@ class Command {
     }
   }
 
-  send (msg, content, deleteDelay = 0, file = null) {
+  send (msg, content, deleteDelay = 0, file = null, a = true) {
     deleteDelay = deleteDelay || this.config.deleteCommandMessagesTime
 
     if (typeof content == "string") {
-      content = this.self.config.prefix+content
+      if(a)
+        content = this.self.config.prefix+content
       if (content.length > 2000) {
         this.log.err('Error sending a message larger than the limit (2000+)')
         return
       }
     }else{
-      if(content && content.content){
+      if(content && content.content && a){
         content.content = this.self.config.prefix+content.content
       }else{
         content.content = msg.content
@@ -123,8 +124,7 @@ class Command {
         return
       }
     }else{
-      if(content.content){
-        if(a)
+      if(content.content && a){
           content.content = this.self.config.prefix+content.content
       }else{
         content.content = msg.content
@@ -218,6 +218,12 @@ class Command {
         return msgs[0]
       })
     }
+  }
+
+  getLastMessage(msg){
+    return this.self.getMessages(msg.channel.id, 1, msg.id, null,null).then(msgs => {
+      return msgs[0]
+    })
   }
 
   quote(msg, quotemsg){

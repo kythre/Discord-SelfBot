@@ -3,7 +3,7 @@ const os = require('os');
 const request = require('request');
 const { execSync } = require('child_process');
 
-var download = function(uri, filename, callback){
+let download = function(uri, filename, callback){
     request.head(uri, function(err, res, body){
         //console.log('content-type:', res.headers['content-type']);
         //console.log('content-length:', res.headers['content-length']);
@@ -17,8 +17,8 @@ var download = function(uri, filename, callback){
 module.exports = (self) => {
     self.registerCommand('resizegif', function (msg, args) {
         self.getMessages(msg.channel.id, 1, msg.id, null,null).then(msgs => {
-            var prevmsg = msgs[0]
-            var gif = {}
+            let prevmsg = msgs[0]
+            let gif = {}
              switch(true){
                 case msg.attachments[0] !== undefined:
                     gif = msg.attachments[0]
