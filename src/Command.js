@@ -147,17 +147,25 @@ class Command {
     })
   }
 
-  error (msg, err = '', sum = ''){
+  msgError (msg, err = '', sum = ''){
     err = err === '' ? 'something happened :(' :  err
     sum = sum === '' ? 'something happened :(' :  sum
 
     this.edit(msg, {
       embed:{
-        description:`:thumbsdown: ${sum}: \`\`\`js\n${err}\`\`\``
+        description:`:sos: ${sum}: \`\`\`js\n${err}\`\`\``
       }
     })
   }
   
+  msgSuccess(msg, info){
+    this.edit(msg, {embed:{description: `:white_check_mark: ${info}`}})
+  }
+
+  msgProgress(msg, info){
+    this.edit(msg, {embed:{description: `<a:loading:504682561251835915> ${info}`}})
+  }
+
   findMember (msg, str) {
     if (!str || str === '') return false
     const guild = msg.channel.guild

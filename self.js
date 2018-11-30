@@ -18,14 +18,14 @@ const games = require('./config/games.json')
 
 const Command = require('./src/Command.js')
 
-const https = require('https');
-
 // Check if config is valid
 configValidator.check(config, log)
 
 // Setup discord client
 const self = new Eris(secret.token)
 let isReady = false
+
+self.log = log
 
 // Pass config and constants to self
 self.constants = constants
@@ -164,53 +164,6 @@ self.on('ready', () => {
       self.editSelf({avatar: avatars[Math.floor(Math.random() * avatars.length)]}).catch(err => log.err(err, 'Avatar Rotator'))
     }, config.rotateAvatarImageTime) // Edits avatar every X milliseconds (You can edit this number in the config file)
   }  
-  /* *************************************************************************************\
-  |   LastFM Status
-  \* *************************************************************************************/
-  let b = true;
-  let c = "";
-
-	setInterval(() => {
-    https.get('https://ws.audioscrobbler.com/2.0/?method=user.getRecentTracks&user=kylr_1&api_key='+self.secret.lastfmkey+'&limit=1&format=json', (res) => {
-        res.setEncoding('utf8');
-        let rawData = '';
-        res.on('data', (d)=>{
-            rawData += d;
-        });
-
-        res.on('end', ()=>{
-            try {
-              const data = JSON.parse(rawData);
-              let currenttrack = data.recenttracks.track[0];
-              let artist = currenttrack.artist["#text"]
-              let trackname = currenttrack.name
-              let a = trackname + " by "+ artist
-              log.log("Song: "+ a,  "LastFM", "bgCyan", true);
-
-              if (currenttrack["@attr"]){
-                log.log("Currently Playing",  "LastFM", "bgCyan", true);
-
-                if (c != a){
-                  log.log("Setting to: "+ a,  "LastFM", "bgCyan", true);
-                  self.editStatus(config.defaultStatus.toLowerCase(), {name: a})
-                  b = true;
-                  c = a;
-                }
-              }else{
-                if (b){
-                  log.log("Setting to: nothing",  "LastFM", "bgCyan", true)
-                  self.editStatus(config.defaultStatus.toLowerCase(), {name: 'nothing'})
-                  b = false;
-                }
-              }
-              self.editAFK(self.afk);
-            } catch (e) {
-              console.error(e.message);
-          }
-      });
-    })  
-  }, 15000);
-
 	//self.editStatus(config.defaultStatus.toLowerCase(), {name: 'nothing', type: 1, url: 'https://www.twitch.tv/twitch'})
 })
 

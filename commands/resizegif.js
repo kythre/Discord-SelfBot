@@ -35,13 +35,13 @@ module.exports = (self) => {
                     gif.filename = gif.url.split('/')[gif.url.split('/').length-1]
                     break;
                 default:
-                 return this.error(msg, `noting to resize`, 'error resizing')
+                 return this.msgError(msg, `noting to resize`, 'error resizing')
             }
 
             if (!gif.url.endsWith('.gif'))
-              return this.error(msg, `invalid gif`, 'error resizing')
+              return this.msgError(msg, `invalid gif`, 'error resizing')
 
-            this.edit(msg, {embed:{description:`:point_up: downloading gif`}})
+            this.msgProgress(msg, `downloading gif`)
 
             gif.filepath = "./temp/"+gif.filename
 
@@ -54,33 +54,33 @@ module.exports = (self) => {
                 gif.size.original = fs.statSync(`${gif.filepath}`).size/1000
 
                 if(gif.size.original < 256)
-                    return this.edit(msg, {embed:{description:`:thumbsup: gif already small`}})
+                    return this.msgSuccess(msg, `gif already small`)
 
                 try{
                     let size = 128
-                    this.edit(msg, {embed:{description:`:point_up: resizing gif`}})
+                    this.msgProgress(msg, `resizing gif`)
                     do{
                         switch(os.platform()){
                           case "win32":
                             execSync(`gifsicle.exe --resize-height ${size} ${gif.filepath} --colors 256 -o ${gif.filepath}`)
                             break;
                           default:
-                            return this.error(msg, `${os.platform()} not supported`, 'error resizing')
+                            return this.msgError(msg, `${os.platform()} not supported`, 'error resizing')
                         }
                         gif.size.current = fs.statSync(gif.filepath).size/1000
                         size -= 10
                     }while(gif.size.current > 256)
                 }catch(err){
-                    return this.error(msg, err, 'error resizing')
+                    return this.msgError(msg, err, 'error resizing')
                 }
 
-                this.edit(msg, {embed:{description:`:point_up: sending gif`}})
+                this.msgProgress(msg, `sending gif`)
     
                 gif.size.current = fs.statSync(gif.filepath).size/1000
                 gif.file = fs.readFileSync(gif.filepath)
 
                 this.send(msg, {
-                    content: `:thumbsup: now ${gif.size.current}KB`,
+                    content: `now ${gif.size.current}KB`,
                     embed:{
                         description: `Original: [${gif.filename}](${gif.url}) (${gif.size.original}KB)`
                     }
