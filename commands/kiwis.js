@@ -21,21 +21,12 @@ module.exports = (self) => {
     })
 
     function fakePicked(whomstve, amount){
-        self.createMessage(whomstve.channel.id,  {
+        return self.createMessage(whomstve.channel.id,  {
             content: "",
             embed:{
-        description: `**${whomstve.author.username+whomstve.author.discriminator}** picked ${amount}:kiwi:`,
+            description: `**${whomstve.author.username+whomstve.author.discriminator}** picked ${amount}:kiwi:`,
                 color: 53380
             }
-        }).then((msg)=>{
-            if(plantMessage) {
-                plantMessage.delete()
-                plantAmount = null
-            }
-
-            setTimeout(() => {
-                msg.delete()
-            }, 5000);
         })
     }
 
@@ -45,16 +36,26 @@ module.exports = (self) => {
     })
             
     self.on('messageCreate', (msg) => {
-        if (!plantMessage) return
         if (!msg.author) return
+        if (!msg.channel.guild) return
 
         if(enabled && msg.author.id == "338120746498785281" && msg.cleanContent.toString().includes(",pick")) 
             setTimeout(()=>{
                 self.createMessage(msg.channel.id, ",pick")
             }, timeout);
 
-        if (msg.channel.guild.id != plantMessage.channel.guild.id) return 
-        if (msg.content == ",pick") fakePicked(msg, plantAmount)
+        if(plantMessage && plantMessage != null) {
+            if (msg.channel.guild.id != plantMessage.channel.guild.id) return 
+            if (msg.content == ",pick"){
+                fakePicked(msg, plantAmount).then((msg)=>{
+                    plantMessage.delete()
+                    plantMessage = null
+                    setTimeout(() => {
+                        msg.delete()
+                    }, 5000);
+                })
+            }
+        }
     })
 
     let enabled = false

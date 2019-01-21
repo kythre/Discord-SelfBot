@@ -97,12 +97,8 @@ module.exports = (self) => {
                 let currenttrack = data.recenttracks.track[0];
                 let artist = currenttrack.artist["#text"]
                 let trackname = currenttrack.name
-                let a = trackname + " by "+ artist
-                self.log.log("Song: "+ a,  "LastFM", "bgCyan", true);
-  
-                if (currenttrack["@attr"]){
-                    self.log.log("Currently Playing",  "LastFM", "bgCyan", true);
-  
+                let a = trackname + " by "+ artist  
+                if (currenttrack["@attr"]){  
                   if (c != a){
                     self.log.log("Setting to: "+ a,  "LastFM", "bgCyan", true);
                     self.editStatus(self.config.defaultStatus.toLowerCase(), {name: a})
@@ -112,7 +108,7 @@ module.exports = (self) => {
                 }else{
                   if (b){
                     self.log.log("Setting to: nothing",  "LastFM", "bgCyan", true)
-                    self.editStatus(self.config.defaultStatus.toLowerCase(), {name: 'nothing'})
+                    self.editStatus(self.config.defaultStatus.toLowerCase(), {})
                     b = false;
                   }
                 }

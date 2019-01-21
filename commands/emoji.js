@@ -12,7 +12,7 @@ module.exports = (self) => {
     switch(args[0]){
       case 'add':
         if (!args[1] || !args[1].length > 1) return this.msgError(msg, "emoji name too short")
-        if (!args[2] || !args[2].match(/(http(s?):)([/|.|\w|\s|-])*\.(?:jpg|gif|png)/)) return this.msgError(msg, "invalid image url")
+        if (!args[2] || !args[2].match(/(http(s?):)([/|.|\w|\s|-])*\.(?:jpg|png|jpeg)/)) return this.msgError(msg, "url isnt a png or jpeg")
 
         try{
           this.msgProgress(msg, "downloading image")

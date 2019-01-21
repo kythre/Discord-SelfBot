@@ -25,12 +25,12 @@ configValidator.check(config, log)
 const self = new Eris(secret.token)
 let isReady = false
 
-self.log = log
-
 // Pass config and constants to self
 self.constants = constants
 self.config = config
 self.secret = secret
+self.log = log
+
 
 const counts = {
   msgsGot: 0,
